@@ -158,6 +158,7 @@ func (bas *BaseService) processRequests() {
 
 		select {
 		case <-ctx.Done():
+		case <-bas.Done():
 		default:
 			bas.CheckRateLimit()
 			// Call the queued function or method
