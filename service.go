@@ -15,6 +15,9 @@ type Args interface{}
 type Service interface {
 	fmt.Stringer
 
+	// Description returns a greeting message from the service.
+	Description() string
+
 	// Start requests that the service be started.
 	Start() error
 

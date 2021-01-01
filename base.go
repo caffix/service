@@ -34,6 +34,11 @@ func NewBaseService(srv Service, name string) *BaseService {
 	}
 }
 
+// Description implements the Service interface.
+func (bas *BaseService) Description() string {
+	return ""
+}
+
 // Start implements the Service interface.
 func (bas *BaseService) Start() error {
 	if bas.running() {
