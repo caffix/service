@@ -20,6 +20,7 @@ type BaseService struct {
 	runs   bool
 	queue  queue.Queue
 	done   chan struct{}
+	rlock  sync.Mutex
 	rlimit ratelimit.Limiter
 	// The specific service embedding BaseService
 	service Service
@@ -113,8 +114,8 @@ func (bas *BaseService) String() string {
 
 // SetRateLimit implements the Service interface.
 func (bas *BaseService) SetRateLimit(persec int) {
-	bas.Lock()
-	defer bas.Unlock()
+	bas.rlock.Lock()
+	defer bas.rlock.Unlock()
 
 	if persec == 0 {
 		bas.rlimit = nil
@@ -126,8 +127,8 @@ func (bas *BaseService) SetRateLimit(persec int) {
 
 // CheckRateLimit implements the Service interface.
 func (bas *BaseService) CheckRateLimit() {
-	bas.Lock()
-	defer bas.Unlock()
+	bas.rlock.Lock()
+	defer bas.rlock.Unlock()
 
 	if bas.rlimit != nil {
 		bas.rlimit.Take()
