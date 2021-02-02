@@ -131,11 +131,13 @@ func TestRateLimit(t *testing.T) {
 	srv.Start()
 	defer srv.Stop()
 
-	strs := []string{"str1", "str2"}
+	strs := []string{"str1", "str2", "str3"}
 	for _, str := range strs {
 		srv.Request(context.TODO(), str)
 	}
 
+	// The first request is not rate limited
+	<-ch
 	start := time.Now()
 	<-ch
 	<-ch
