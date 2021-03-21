@@ -180,5 +180,6 @@ func (t *testService) OnStop() error {
 func (t *testService) OnRequest(ctx context.Context, args Args) {
 	if r, ok := args.(string); ok {
 		t.next <- r
+		t.CheckRateLimit()
 	}
 }

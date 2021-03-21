@@ -153,8 +153,6 @@ func (bas *BaseService) queueRequest(fn interface{}, args ...Args) {
 }
 
 func (bas *BaseService) processRequests() {
-	first := true
-
 	each := func(element interface{}) {
 		e := element.(*queuedCall)
 		ctx := e.Args[0].Interface().(context.Context)
@@ -163,11 +161,6 @@ func (bas *BaseService) processRequests() {
 		case <-ctx.Done():
 		case <-bas.Done():
 		default:
-			if !first {
-				bas.CheckRateLimit()
-			}
-			first = false
-			// Call the queued function or method
 			e.Func.Call(e.Args)
 		}
 	}
