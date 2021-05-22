@@ -2,6 +2,8 @@ github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 h1:MzBOUgng9or
 github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129/go.mod h1:rFgpPQZYZ8vdbc+48xibu8ALc3yeyd64IhHS+PU6Yyg=
 github.com/caffix/queue v0.0.0-20210301212750-6e488abe1004 h1:n/ae8+HKTPGhHHH/5AvzW/DW5CBI1lS0jdm50gKsGBQ=
 github.com/caffix/queue v0.0.0-20210301212750-6e488abe1004/go.mod h1:EGrMYDMC3oIYDWaLGKWMypHkg/vEBDqxbz2guAlY0Wk=
+github.com/caffix/queue v0.0.0-20210420232735-50705a598e3e h1:gdc9OHKSHoi9h8V7V4KI4CJYlyD/9k91VPhLohp6Opg=
+github.com/caffix/queue v0.0.0-20210420232735-50705a598e3e/go.mod h1:jQmcf5a/YBH3dS7onNXaIG4dhfJLwPOQEj6B/PsXodI=
 github.com/caffix/stringset v0.0.0-20201218015502-4f60634ff035 h1:wFUL+cdCb5erB1HJHGYrtm5i6Y2LYpCq3wFef7XNii4=
 github.com/caffix/stringset v0.0.0-20201218015502-4f60634ff035/go.mod h1:28GU9FTlJHzfjrFJ5Ep7vmXNkSSM3JF0miNt7ZM9V5w=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
