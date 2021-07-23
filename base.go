@@ -128,10 +128,11 @@ func (bas *BaseService) SetRateLimit(persec int) {
 // CheckRateLimit implements the Service interface.
 func (bas *BaseService) CheckRateLimit() {
 	bas.rlock.Lock()
-	defer bas.rlock.Unlock()
+	rlimit := bas.rlimit
+	bas.rlock.Unlock()
 
-	if bas.rlimit != nil {
-		bas.rlimit.Take()
+	if rlimit != nil {
+		rlimit.Take()
 	}
 }
 
