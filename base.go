@@ -5,12 +5,9 @@
 package service
 
 import (
-	"context"
 	"errors"
-	"reflect"
 	"sync"
 
-	"github.com/caffix/queue"
 	"go.uber.org/ratelimit"
 )
 
@@ -19,8 +16,9 @@ type BaseService struct {
 	sync.Mutex
 	name   string
 	runs   bool
-	queue  queue.Queue
 	done   chan struct{}
+	input  chan interface{}
+	output chan interface{}
 	rlock  sync.Mutex
 	rlimit ratelimit.Limiter
 	// The specific service embedding BaseService
@@ -31,7 +29,8 @@ type BaseService struct {
 func NewBaseService(srv Service, name string) *BaseService {
 	return &BaseService{
 		name:    name,
-		queue:   queue.NewQueue(),
+		input:   make(chan interface{}),
+		output:  make(chan interface{}),
 		service: srv,
 	}
 }
@@ -48,7 +47,6 @@ func (bas *BaseService) Start() error {
 	}
 
 	bas.done = make(chan struct{})
-	go bas.processRequests()
 	bas.setRunning(true)
 	return bas.service.OnStart()
 }
@@ -88,24 +86,19 @@ func (bas *BaseService) OnStop() error {
 	return nil
 }
 
-// Len implements the Service interface.
-func (bas *BaseService) Len() int {
-	return bas.queue.Len()
-}
-
-// Request implements the Service interface.
-func (bas *BaseService) Request(ctx context.Context, args Args) {
-	if bas.running() {
-		bas.queueRequest(bas.service.OnRequest, ctx, args)
-	}
-}
-
-// OnRequest implements the Service interface.
-func (bas *BaseService) OnRequest(ctx context.Context, args Args) {}
-
 // Done implements the Service interface.
 func (bas *BaseService) Done() <-chan struct{} {
 	return bas.done
+}
+
+// Input implements the Service interface.
+func (bas *BaseService) Input() chan interface{} {
+	return bas.input
+}
+
+// Output implements the Service interface.
+func (bas *BaseService) Output() chan interface{} {
+	return bas.output
 }
 
 // String implements the Stringer interface.
@@ -122,7 +115,6 @@ func (bas *BaseService) SetRateLimit(persec int) {
 		bas.rlimit = nil
 		return
 	}
-
 	bas.rlimit = ratelimit.New(persec, ratelimit.WithoutSlack)
 }
 
@@ -134,45 +126,5 @@ func (bas *BaseService) CheckRateLimit() {
 
 	if rlimit != nil {
 		rlimit.Take()
-	}
-}
-
-type queuedCall struct {
-	Func reflect.Value
-	Args []reflect.Value
-}
-
-func (bas *BaseService) queueRequest(fn interface{}, args ...Args) {
-	passedArgs := make([]reflect.Value, 0)
-	for _, arg := range args {
-		passedArgs = append(passedArgs, reflect.ValueOf(arg))
-	}
-
-	bas.queue.Append(&queuedCall{
-		Func: reflect.ValueOf(fn),
-		Args: passedArgs,
-	})
-}
-
-func (bas *BaseService) processRequests() {
-	each := func(element interface{}) {
-		e := element.(*queuedCall)
-		ctx := e.Args[0].Interface().(context.Context)
-
-		select {
-		case <-ctx.Done():
-		case <-bas.Done():
-		default:
-			e.Func.Call(e.Args)
-		}
-	}
-
-	for {
-		select {
-		case <-bas.Done():
-			return
-		case <-bas.queue.Signal():
-			bas.queue.Process(each)
-		}
 	}
 }

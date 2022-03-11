@@ -2,7 +2,4 @@ module github.com/caffix/service
 
 go 1.16
 
-require (
-	github.com/caffix/queue v0.1.3
-	go.uber.org/ratelimit v0.2.0
-)
+require go.uber.org/ratelimit v0.2.0

@@ -4,13 +4,7 @@
 
 package service
 
-import (
-	"context"
-	"fmt"
-)
-
-// Args is the type used to pass arguments to Service requests.
-type Args interface{}
+import "fmt"
 
 // Service handles queued requests at an optional rate limit.
 type Service interface {
@@ -31,17 +25,14 @@ type Service interface {
 	// OnStop is called when the Stop method requests the service be stopped.
 	OnStop() error
 
-	// Request queues a request for the service.
-	Request(ctx context.Context, args Args)
-
-	// OnRequest is called non-concurrently to handle a request appended to the queue.
-	OnRequest(ctx context.Context, args Args)
-
-	// Len returns the current length of the request queue.
-	Len() int
-
 	// Done returns a channel that is closed when the service is stopped.
 	Done() <-chan struct{}
+
+	// Input returns a channel that the service receives requests on.
+	Input() chan interface{}
+
+	// Output returns a channel that the service send results on.
+	Output() chan interface{}
 
 	// SetRateLimit sets the number of calls to the OnRequest method each second.
 	SetRateLimit(persec int)
