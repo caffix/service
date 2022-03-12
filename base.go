@@ -29,6 +29,7 @@ type BaseService struct {
 func NewBaseService(srv Service, name string) *BaseService {
 	return &BaseService{
 		name:    name,
+		done:    make(chan struct{}),
 		input:   make(chan interface{}),
 		output:  make(chan interface{}),
 		service: srv,
@@ -46,7 +47,6 @@ func (bas *BaseService) Start() error {
 		return errors.New(bas.name + " has already been started")
 	}
 
-	bas.done = make(chan struct{})
 	bas.setRunning(true)
 	return bas.service.OnStart()
 }
