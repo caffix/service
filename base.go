@@ -31,7 +31,7 @@ func NewBaseService(srv Service, name string) *BaseService {
 		name:    name,
 		done:    make(chan struct{}),
 		input:   make(chan interface{}),
-		output:  make(chan interface{}),
+		output:  make(chan interface{}, 10),
 		service: srv,
 	}
 }
@@ -75,9 +75,31 @@ func (bas *BaseService) Stop() error {
 	if !bas.running() {
 		return errors.New(bas.name + " is already stopped")
 	}
+	// Empty the input requests
+loop:
+	for {
+		select {
+		case <-bas.Input():
+		default:
+			break loop
+		}
+	}
 
-	bas.setRunning(false)
-	close(bas.done)
+	ch := make(chan struct{})
+	defer close(ch)
+	// Empty the output channel while finishing
+	go func(out chan interface{}, finished chan struct{}) {
+		for {
+			select {
+			case <-out:
+			case <-finished:
+				return
+			}
+		}
+	}(bas.Output(), ch)
+
+	defer bas.setRunning(false)
+	defer close(bas.done)
 	return bas.service.OnStop()
 }
 
