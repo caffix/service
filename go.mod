@@ -1,6 +1,6 @@
 module github.com/caffix/service
 
-go 1.18
+go 1.19
 
 require go.uber.org/ratelimit v0.2.0
 

@@ -19,8 +19,8 @@ func TestStart(t *testing.T) {
 	default:
 	}
 
-	srv.Start()
-	defer srv.Stop()
+	_ = srv.Start()
+	defer func() { _ = srv.Stop() }()
 	time.Sleep(500 * time.Millisecond)
 
 	select {
@@ -33,7 +33,7 @@ func TestStart(t *testing.T) {
 func TestStop(t *testing.T) {
 	srv := newTestService()
 
-	srv.Start()
+	_ = srv.Start()
 	if err := srv.Stop(); err == nil {
 		select {
 		case <-srv.Done():
@@ -52,8 +52,8 @@ func TestStop(t *testing.T) {
 func TestRequest(t *testing.T) {
 	srv := newTestService()
 
-	srv.Start()
-	defer srv.Stop()
+	_ = srv.Start()
+	defer func() { _ = srv.Stop() }()
 	// Check that the requests are being processed in the correct order
 	for _, str := range []string{"str1", "str2", "str3"} {
 		srv.Input() <- str
@@ -67,8 +67,8 @@ func TestRateLimit(t *testing.T) {
 	srv := newTestService()
 	srv.SetRateLimit(2)
 
-	srv.Start()
-	defer srv.Stop()
+	_ = srv.Start()
+	defer func() { _ = srv.Stop() }()
 
 	start := time.Now()
 	for _, str := range []string{"1", "2", "3", "4"} {
