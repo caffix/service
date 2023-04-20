@@ -1,4 +1,4 @@
-// Copyright © by Jeff Foley 2020-2022. All rights reserved.
+// Copyright © by Jeff Foley 2020-2023. All rights reserved.
 // Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -110,6 +110,11 @@ func (bas *BaseService) Done() <-chan struct{} {
 // Input implements the Service interface.
 func (bas *BaseService) Input() chan interface{} {
 	return bas.input
+}
+
+// HandlesReq implements the Service interface.
+func (bas *BaseService) HandlesReq(req interface{}) bool {
+	return true
 }
 
 // Output implements the Service interface.

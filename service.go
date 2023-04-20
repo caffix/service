@@ -1,4 +1,4 @@
-// Copyright © by Jeff Foley 2020-2022. All rights reserved.
+// Copyright © by Jeff Foley 2020-2023. All rights reserved.
 // Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -30,6 +30,9 @@ type Service interface {
 
 	// Input returns a channel that the service receives requests on.
 	Input() chan interface{}
+
+	// HandlesReq returns true when the provided request is processed by the service.
+	HandlesReq(req interface{}) bool
 
 	// Output returns a channel that the service send results on.
 	Output() chan interface{}
